@@ -1,0 +1,107 @@
+; Stratum Corneum Ceramide2 Cholesterol and Free fatty acid 24:0 in water, 
+; using gromacs 4.6.7 for pull simulation
+
+; RUN CONTROL PARAMETERS
+integrator               = md
+; Start time and timestep in ps
+tinit                    = 0
+dt                       = 0.002
+nsteps                   = 5000000 ; 10 ns 
+init_step                = 0
+
+; mode for center of mass motion removal
+comm-mode                = Linear
+; number of steps for center of mass motion removal
+nstcomm                  = 1
+; group(s) for center of mass motion removal
+comm-grps                = Lipids Water Protein
+
+; OUTPUT CONTROL OPTIONS
+; Output frequency for coords (x), velocities (v) and forces (f)
+nstxout                  = 1000
+nstvout                  = 5000
+nstfout                  = 5000
+; Checkpointing helps you continue after crashes
+nstcheckpoint            = 5000
+; Output frequency for energies to log file and energy file
+nstlog                   = 1000
+nstenergy                = 500
+; Output frequency and precision for xtc file
+nstxtcout                = 5000
+xtc-precision            = 1000
+; Selection of energy groups
+energygrps               = SOL Lipids Protein
+
+; NEIGHBORSEARCHING PARAMETERS
+; cut-off scheme (group: using charge groups, Verlet: particle based cut-offs)
+cutoff-scheme            = Group
+; nblist update frequency
+nstlist                  = 5
+; ns algorithm (simple or grid)
+ns-type                  = Grid
+; Periodic boundary conditions: xyz, no, xy
+pbc                      = xyz
+periodic-molecules       = no
+; Allowed energy drift due to the Verlet buffer in kJ/mol/ps per atom,
+; a value of -1 means: use rlist
+verlet-buffer-drift      = 0.005
+; nblist cut-off        
+rlist                    = 1.4
+
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+; Method for doing electrostatics
+coulombtype              = Reaction-Field
+coulomb-modifier         = None
+rcoulomb                 = 1.4
+; Relative dielectric constant for the medium and the reaction field
+epsilon-r                = 1
+epsilon_rf               = 62
+; Method for doing Van der Waals
+vdw-type                 = Cut-off
+vdw-modifier             = None
+rvdw                     = 1.4
+; Apply long range dispersion corrections for Energy and Pressure
+DispCorr                 = No
+; Extension of the potential lookup tables beyond the cut-off
+table-extension          = 1.0
+
+
+; OPTIONS FOR WEAK COUPLING ALGORITHMS
+
+; Temperature coupling  
+tcoupl                   = nose-hoover
+nsttcouple               = -1
+; Groups to couple separately
+tc-grps                  = Lipids Water Protein
+; Time constant (ps) and reference temperature (K)
+tau-t                    = 0.5 0.5 0.5
+ref-t                    = 305 305 305
+
+
+; pressure coupling     
+Pcoupl                   = Parrinello-Rahman
+Pcoupltype               = semiisotropic
+nstpcouple               = -1
+;Time constant (ps), compressibility (1/bar) and reference P (bar)
+tau-p                    = 2.0 2.0
+compressibility          = 4.5e-5 4.5e-5
+ref-p                    = 1.0 1.0
+
+
+; OPTIONS FOR BONDS    
+constraints              = all-bonds
+; Type of constraint algorithm
+constraint-algorithm     = Lincs
+
+; OPTIONS FOR PULL CODE 
+;Pull a group across the bilayer 
+pull            = constant-force ;.
+pull_geometry   = direction-periodic ;.
+pull_vec1       = 0 0 1     ; pull in z direction
+pull_ngroups    = 1         ; The number of pull groups, not including the reference group
+pull_group0     = Lipids    ; The name of the stationary group in the index file
+pull_group1     = Protein   ; The name of the pull group in the index file
+pull_k1         = 250       ; harmonic force constant in [kJ mol-1 nm-2]
+pull_nstxout    = 500       ; frequency of px.xvg output in number of steps
+pull_nstfout    = 500       ; frequency of pf.xvg output in number of steps
