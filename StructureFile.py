@@ -17,7 +17,8 @@
 #   examples in main()
 #
 # todo:
-#   make _createAtomArray more efficient
+#   make _createAtomArray() more efficient
+#   removelines() - make the for loop to a while loop 
 
 class StructureFile:
     # class variables           # all are strings to make file writing easier
